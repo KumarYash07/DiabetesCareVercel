@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS
 import pickle
 import numpy as np
 import os
@@ -7,7 +6,27 @@ import sys
 
 # ================= APP CONFIG =================
 app = Flask(__name__)
-CORS(app) 
+
+# ================= CORS CONFIGURATION =================
+@app.after_request
+def add_cors_headers(response):
+    """Add CORS headers to every response"""
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization, X-Requested-With'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    response.headers['Access-Control-Allow-Credentials'] = 'true'
+    return response
+
+@app.route('/predict', methods=['OPTIONS'])
+@app.route('/predict/batch', methods=['OPTIONS'])
+@app.route('/model/info', methods=['OPTIONS'])
+def handle_preflight():
+    """Handle CORS preflight requests"""
+    response = jsonify({'message': 'CORS preflight successful'})
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'
+    return response, 200
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MODEL_PATH = os.path.join(BASE_DIR, "model.pkl")
@@ -17,7 +36,6 @@ model = None
 accuracy = None
 
 print(f"Python version: {sys.version}")
-print(f"NumPy version: {np.__version__}")
 
 try:
     with open(MODEL_PATH, "rb") as file:
@@ -48,8 +66,6 @@ def health_check():
         "status": "active",
         "model_loaded": model is not None,
         "accuracy": round(accuracy * 100, 2) if accuracy else None,
-        "python_version": sys.version,
-        "numpy_version": np.__version__,
         "message": "Diabetes Prediction API is running"
     })
 
@@ -82,17 +98,23 @@ def predict():
                 "status": "error"
             }), 400
         
-        # Convert to float
-        pregnancies = float(data['pregnancies'])
-        glucose = float(data['glucose'])
-        bloodpressure = float(data['bloodpressure'])
-        skinthickness = float(data['skinthickness'])
-        insulin = float(data['insulin'])
-        bmi = float(data['bmi'])
-        dpf = float(data['dpf'])
-        age = float(data['age'])
+        # Convert to float with validation
+        try:
+            pregnancies = float(data['pregnancies'])
+            glucose = float(data['glucose'])
+            bloodpressure = float(data['bloodpressure'])
+            skinthickness = float(data['skinthickness'])
+            insulin = float(data['insulin'])
+            bmi = float(data['bmi'])
+            dpf = float(data['dpf'])
+            age = float(data['age'])
+        except ValueError as e:
+            return jsonify({
+                "error": f"Invalid number format: {str(e)}",
+                "status": "error"
+            }), 400
         
-        # Basic validation
+        # Range validations
         if pregnancies < 0 or pregnancies > 20:
             return jsonify({"error": "Pregnancies must be between 0 and 20", "status": "error"}), 400
         
@@ -230,9 +252,7 @@ def model_info():
             "skinthickness", "insulin", "bmi", "dpf", "age"
         ],
         "prediction_classes": ["Low Risk", "High Risk"],
-        "model_type": type(model).__name__ if model else None,
-        "python_version": sys.version,
-        "numpy_version": np.__version__
+        "model_type": type(model).__name__ if model else None
     })
 
 # ================= ERROR HANDLERS =================
