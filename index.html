@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=yes">
+        <title>DiabetesCare | AI-Powered Diabetes Risk Test</title>
+        <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, 'Segoe UI', 'Inter', 'Helvetica Neue', sans-serif;
+            background: #f0f7f0;
+            color: #1a2c1e;
+            line-height: 1.5;
+        }
+
+        /* Header & Navigation */
+        .top-bar {
+            background: #ffffffdd;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #c8e6c9;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        .nav-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            gap: 16px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-size: 1.7rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e6f3c, #2e7d32);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+        }
+
+        .badge {
+            background: #e8f5e9;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #1e6f3c;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #2c3e2b;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #1b5e2a;
+            text-decoration: underline;
+        }
+
+        .user-welcome {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #e9f3e6;
+            padding: 6px 14px;
+            border-radius: 80px;
+        }
+
+        .user-welcome span {
+            font-weight: 500;
+            color: #1d4d1f;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            font-weight: 600;
+            color: #b91c1c;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Hero section */
+        .hero {
+            background: linear-gradient(120deg, #d9f0da, #c8e6df);
+            border-radius: 2rem;
+            margin: 32px 0;
+            padding: 40px 32px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #0f3b1a;
+            margin-bottom: 12px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin-bottom: 24px;
+            color: #2c4b2b;
+        }
+
+        .btn-primary {
+            background: #1f6e43;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:hover {
+            background: #0f5535;
+            transform: translateY(-2px);
+        }
+
+        /* Cards grid (info) */
+        .info-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 28px;
+            margin: 48px 0 32px;
+        }
+
+        .info-card {
+            background: white;
+            flex: 1;
+            min-width: 220px;
+            border-radius: 28px;
+            padding: 24px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s;
+            border: 1px solid #daecd9;
+        }
+
+        .info-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: #1b5e2a;
+        }
+
+        .info-card p {
+            margin-bottom: 20px;
+            color: #3a5a3a;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid #2e7d57;
+            padding: 8px 18px;
+            border-radius: 40px;
+            font-weight: 500;
+            color: #1f6e43;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .btn-outline:hover {
+            background: #eef5ea;
+        }
+
+        /* Risk Test Form Section */
+        .risk-section {
+            background: white;
+            border-radius: 32px;
+            padding: 32px 28px;
+            margin: 40px 0;
+            box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.1);
+            border: 1px solid #cfe9cf;
+        }
+
+        .section-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #1f4723;
+        }
+
+        .subhead {
+            color: #4d694a;
+            margin-bottom: 28px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            color: #1f4f2a;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .input-group input {
+            padding: 12px 14px;
+            border-radius: 24px;
+            border: 1.5px solid #c2dfc2;
+            font-size: 1rem;
+            transition: 0.2s;
+            background: #fefef7;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #2b7e4b;
+            box-shadow: 0 0 0 3px rgba(43, 126, 75, 0.2);
+        }
+
+        .helper-text {
+            font-size: 0.75rem;
+            color: #5f7c5c;
+        }
+
+        .action-area {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            margin-top: 12px;
+        }
+
+        .btn-test {
+            background: #0f683f;
+            padding: 14px 32px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .result-card {
+            background: #f2faf0;
+            border-radius: 28px;
+            margin-top: 32px;
+            padding: 24px;
+            border-left: 8px solid #2c7a4d;
+            transition: 0.2s;
+        }
+
+        .risk-level {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .risk-message {
+            font-size: 1.1rem;
+            margin-top: 8px;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border: 3px solid #cfe9cf;
+            border-radius: 50%;
+            border-top-color: #1e6f3c;
+            animation: spin 0.6s linear infinite;
+            margin-right: 12px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        footer {
+            margin-top: 60px;
+            background: #e2f0df;
+            padding: 28px 0;
+            text-align: center;
+            border-radius: 2rem 2rem 0 0;
+            font-size: 0.85rem;
+            color: #39603a;
+        }
+
+        .disclaimer {
+            font-size: 0.75rem;
+            margin-top: 12px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 680px) {
+            .hero h1 { font-size: 1.8rem; }
+            .container { padding: 0 18px; }
+            .nav-row { flex-direction: column; align-items: flex-start; }
+        }
+
+        .error-text {
+            color: #c7362b;
+            background: #ffe6e5;
+            padding: 12px;
+            border-radius: 28px;
+            margin-top: 16px;
+        }
+    </style>
+    </head>
+    <body>
+        <div class="top-bar">
+            <div class="container">
+                <div class="nav-row">
+                    <div class="logo-area">
+                        <div class="logo">DiabetesCare</div>
+                        <div class="badge">AI · Risk Assessor</div>
+                    </div>
+                    <div class="nav-links">
+                        <a href="#">Home</a>
+                        <a href="#" id="causesLink">Causes of Diabetes</a>
+                        <a href="#" id="preventionLink">Diabetes Prevention</a>
+                        <a href="#" class="active-link"
+                            id="riskTestNavLink">Diabetes Risk Test</a>
+                    </div>
+                    <div class="user-welcome">
+                        <span>👋 Welcome, Back</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <main class="container">
+            <!-- Hero section -->
+            <div class="hero">
+                <h1>Take Control of Your Health</h1>
+                <p>Your trusted source for diabetes information, prevention
+                    tips, and risk assessment powered by machine learning.</p>
+                <button class="btn-primary" id="scrollToTestBtn">Take the
+                    Diabetes Risk Test Now →</button>
+            </div>
+
+            <!-- Info cards (Home / causes / prevention dynamic content will be shown here but we also have separate pages content for consistency, we'll create a simple toggle) -->
+            <div id="dynamicInfoArea">
+                <!-- default - home cards -->
+                <div class="info-grid" id="homeCards">
+                    <div class="info-card">
+                        <h3>📘 Understand Diabetes</h3>
+                        <p>Different types, symptoms, and long-term effects of
+                            diabetes. Learn to recognize early signs.</p>
+                        <button class="btn-outline read-more-btn"
+                            data-info="diabetes">Read More</button>
+                    </div>
+                    <div class="info-card">
+                        <h3>🥗 Prevention is Key</h3>
+                        <p>Discover lifestyle changes and tips to prevent or
+                            delay the onset of Type 2 Diabetes.</p>
+                        <button class="btn-outline read-more-btn"
+                            data-info="prevention">Get Tips</button>
+                    </div>
+                    <div class="info-card">
+                        <h3>🧠 Assess Your Risk</h3>
+                        <p>Use our Random Forest ML model to estimate your
+                            personal diabetes risk with medical parameters.</p>
+                        <button class="btn-outline" id="startTestCardBtn">Start
+                            Test →</button>
+                    </div>
+                </div>
+
+                <!-- hidden containers for detailed causes / prevention text -->
+                <div id="causesDetail" style="display: none;"
+                    class="info-card expanded-info">
+                    <h2>📌 Causes of Diabetes</h2>
+                    <p><strong>Type 1 Diabetes</strong> is an autoimmune
+                        reaction destroying insulin-producing cells. It’s not
+                        preventable and often diagnosed in youth.</p>
+                    <p><strong>Type 2 Diabetes</strong> occurs when body becomes
+                        resistant to insulin or doesn't produce enough. Key risk
+                        factors: Excess weight, physical inactivity, family
+                        history, age >45, ethnicity.</p>
+                    <p><strong>Gestational Diabetes</strong> develops during
+                        pregnancy and raises future Type 2 diabetes risk for
+                        mother and child.</p>
+                    <button class="btn-outline" id="backHomeFromCauses">← Back
+                        to Home</button>
+                </div>
+                <div id="preventionDetail" style="display: none;"
+                    class="info-card expanded-info">
+                    <h2>🍎 Diabetes Prevention Strategies</h2>
+                    <p>✅ Lose 5-7% of body weight if overweight.<br>✅ Eat whole
+                        grains, veggies, lean protein. Limit sugary drinks.<br>✅
+                        150+ min moderate activity weekly.<br>✅ Quit smoking &
+                        manage blood pressure.<br>✅ Prediabetes can often be
+                        reversed with lifestyle changes.</p>
+                    <button class="btn-outline" id="backHomeFromPrevention">←
+                        Back to Home</button>
+                </div>
+            </div>
+
+            <!-- RISK TEST FORM section -->
+            <div class="risk-section" id="riskTestSection">
+                <h2 class="section-title">🔬 Diabetes Risk Test</h2>
+                <div class="subhead">Fill in your medical parameters — our
+                    Random Forest model will estimate your risk level.</div>
+
+                <div class="form-grid" id="riskForm">
+                    <div class="input-group">
+                        <label>🤰 Pregnancies</label>
+                        <input type="number" id="pregnancies" step="1" value="2"
+                            placeholder="Number of pregnancies">
+                        <div class="helper-text">Number of times pregnant</div>
+                    </div>
+                    <div class="input-group">
+                        <label>🩸 Glucose</label>
+                        <input type="number" id="glucose" step="1" value="120"
+                            placeholder="mg/dL">
+                        <div class="helper-text">Plasma glucose
+                            concentration</div>
+                    </div>
+                    <div class="input-group">
+                        <label>❤️ Blood Pressure</label>
+                        <input type="number" id="bloodpressure" step="1"
+                            value="70" placeholder="mm Hg">
+                        <div class="helper-text">Diastolic blood pressure</div>
+                    </div>
+                    <div class="input-group">
+                        <label>📏 Skin Thickness</label>
+                        <input type="number" id="skinthickness" step="1"
+                            value="20" placeholder="mm">
+                        <div class="helper-text">Triceps skin fold
+                            thickness</div>
+                    </div>
+                    <div class="input-group">
+                        <label>💉 Insulin</label>
+                        <input type="number" id="insulin" step="1" value="85"
+                            placeholder="mu U/ml">
+                        <div class="helper-text">2-Hour serum insulin</div>
+                    </div>
+                    <div class="input-group">
+                        <label>⚖️ BMI</label>
+                        <input type="number" id="bmi" step="0.1" value="25.6"
+                            placeholder="kg/m²">
+                        <div class="helper-text">Body mass index</div>
+                    </div>
+                    <div class="input-group">
+                        <label>📈 Diabetes Pedigree Function</label>
+                        <input type="number" id="dpf" step="0.01" value="0.5"
+                            placeholder="0.0 - 2.5">
+                        <div class="helper-text">Family history influence</div>
+                    </div>
+                    <div class="input-group">
+                        <label>🎂 Age</label>
+                        <input type="number" id="age" step="1" value="30"
+                            placeholder="Years">
+                        <div class="helper-text">Age in years</div>
+                    </div>
+                </div>
+
+                <div class="action-area">
+                    <button class="btn-primary btn-test" id="predictBtn">🚀
+                        Assess My Risk</button>
+                    <button class="btn-outline" id="resetFormBtn">Reset to
+                        defaults</button>
+                </div>
+
+                <!-- Prediction result area -->
+                <div id="resultContainer" style="display: none;"
+                    class="result-card">
+                    <div id="resultContent"></div>
+                </div>
+                <div id="apiError" style="display: none;"
+                    class="error-text"></div>
+            </div>
+
+            <footer>
+                <p>© 2025 DiabetesCare. All rights reserved.</p>
+                <div class="disclaimer">⚠️ Disclaimer: This is a demo
+                    application powered by a machine learning model. Consult a
+                    medical professional for diagnosis and treatment.</div>
+            </footer>
+        </main>
+
+        <script>
+    // ---------- DOM elements ----------
+    const required_fields = ['pregnancies', 'glucose', 'bloodpressure', 'skinthickness', 'insulin', 'bmi', 'dpf', 'age'];
+
+    const pregnanciesInp = document.getElementById('pregnancies');
+    const glucoseInp = document.getElementById('glucose');
+    const bloodpressureInp = document.getElementById('bloodpressure');
+    const skinthicknessInp = document.getElementById('skinthickness');
+    const insulinInp = document.getElementById('insulin');
+    const bmiInp = document.getElementById('bmi');
+    const dpfInp = document.getElementById('dpf');
+    const ageInp = document.getElementById('age');
+    const predictBtn = document.getElementById('predictBtn');
+    const resetBtn = document.getElementById('resetFormBtn');
+    const resultContainer = document.getElementById('resultContainer');
+    const resultContent = document.getElementById('resultContent');
+    const apiErrorDiv = document.getElementById('apiError');
+
+    // navigation references
+    const homeCardsDiv = document.getElementById('homeCards');
+    const causesDetailDiv = document.getElementById('causesDetail');
+    const preventionDetailDiv = document.getElementById('preventionDetail');
+    const scrollToTestBtn = document.getElementById('scrollToTestBtn');
+    const startTestCardBtn = document.getElementById('startTestCardBtn');
+    const riskTestSection = document.getElementById('riskTestSection');
+
+    // helper: show home info (cards) and hide extended details
+    function showHomeInfo() {
+        if (homeCardsDiv) homeCardsDiv.style.display = 'flex';
+        if (causesDetailDiv) causesDetailDiv.style.display = 'none';
+        if (preventionDetailDiv) preventionDetailDiv.style.display = 'none';
+    }
+
+    function showCauses() {
+        if (homeCardsDiv) homeCardsDiv.style.display = 'none';
+        if (causesDetailDiv) causesDetailDiv.style.display = 'block';
+        if (preventionDetailDiv) preventionDetailDiv.style.display = 'none';
+    }
+
+    function showPrevention() {
+        if (homeCardsDiv) homeCardsDiv.style.display = 'none';
+        if (causesDetailDiv) causesDetailDiv.style.display = 'none';
+        if (preventionDetailDiv) preventionDetailDiv.style.display = 'block';
+    }
+
+    // Event listeners for nav & informational buttons
+    document.getElementById('causesLink')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        showCauses();
+    });
+    document.getElementById('preventionLink')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        showPrevention();
+    });
+    document.getElementById('riskTestNavLink')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        showHomeInfo();
+        riskTestSection.scrollIntoView({ behavior: 'smooth' });
+    });
+    document.getElementById('backHomeFromCauses')?.addEventListener('click', () => showHomeInfo());
+    document.getElementById('backHomeFromPrevention')?.addEventListener('click', () => showHomeInfo());
+    document.getElementById('backHomeFromCauses')?.addEventListener('click', () => showHomeInfo());
+    
+    // "Read more" buttons inside cards (dynamic but we attach via event delegation)
+    document.querySelectorAll('.read-more-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const infoType = btn.getAttribute('data-info');
+            if (infoType === 'diabetes') showCauses();
+            else if (infoType === 'prevention') showPrevention();
+        });
+    });
+    scrollToTestBtn?.addEventListener('click', () => {
+        showHomeInfo();
+        riskTestSection.scrollIntoView({ behavior: 'smooth' });
+    });
+    startTestCardBtn?.addEventListener('click', () => {
+        showHomeInfo();
+        riskTestSection.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    // Reset form to test defaults
+    function resetFormToDefault() {
+        pregnanciesInp.value = 2;
+        glucoseInp.value = 120;
+        bloodpressureInp.value = 70;
+        skinthicknessInp.value = 20;
+        insulinInp.value = 85;
+        bmiInp.value = 25.6;
+        dpfInp.value = 0.5;
+        ageInp.value = 30;
+        // Also hide previous result/error
+        resultContainer.style.display = 'none';
+        apiErrorDiv.style.display = 'none';
+    }
+    resetBtn?.addEventListener('click', resetFormToDefault);
+    
+    // gather patient data from UI
+    function getPatientData() {
+        return {
+            pregnancies: parseFloat(pregnanciesInp.value),
+            glucose: parseFloat(glucoseInp.value),
+            bloodpressure: parseFloat(bloodpressureInp.value),
+            skinthickness: parseFloat(skinthicknessInp.value),
+            insulin: parseFloat(insulinInp.value),
+            bmi: parseFloat(bmiInp.value),
+            dpf: parseFloat(dpfInp.value),
+            age: parseFloat(ageInp.value)
+        };
+    }
+
+    // validate numeric fields
+    function validateData(data) {
+        for (let key of required_fields) {
+            let val = data[key];
+            if (isNaN(val) || val === null || val === undefined) {
+                return `Invalid or missing value for ${key}. Please enter a valid number.`;
+            }
+            if (key === 'glucose' && (val < 0 || val > 400)) return 'Glucose value should be between 0-400 mg/dL';
+            if (key === 'bmi' && (val < 5 || val > 70)) return 'BMI should be between 5 and 70';
+            if (key === 'age' && (val < 0 || val > 120)) return 'Age should be between 0-120';
+            if (key === 'bloodpressure' && (val < 20 || val > 200)) return 'Blood pressure value suspicious (20-200 mmHg)';
+        }
+        return null;
+    }
+
+    // Show loading state inside result container
+    let loadingIndicator = false;
+
+    async function predictDiabetes(patientData) {
+        try {
+            const response = await fetch('https://diabetes-care-vercel.vercel.app/predict', {
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(patientData)
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Fetch error:', error);
+            throw error;
+        }
+    }
+
+    // display result with risk level
+    function displayPredictionResult(result) {
+        if (result && result.status === 'success') {
+            let risk = result.risk_level || 'Unknown';
+            let message = result.message || 'Assessment completed.';
+            let bgColor = '#e6f4ea';
+            let riskColor = '#166534';
+            if (risk.toLowerCase().includes('high')) {
+                riskColor = '#b91c1c';
+                bgColor = '#ffeaea';
+            } else if (risk.toLowerCase().includes('moderate')) {
+                riskColor = '#b45309';
+                bgColor = '#fff0e0';
+            } else if (risk.toLowerCase().includes('low')) {
+                riskColor = '#2b6e3c';
+            }
+            resultContent.innerHTML = `
+                <div class="risk-level" style="color: ${riskColor};">🎯 Risk Level: ${risk}</div>
+                <div class="risk-message">📋 ${message}</div>
+                <div style="margin-top: 16px; font-size: 0.9rem;">⚕️ Remember: This is an AI estimate — always consult a healthcare provider.</div>
+            `;
+            resultContainer.style.display = 'block';
+            resultContainer.style.background = bgColor;
+            resultContainer.style.borderLeftColor = riskColor;
+        } else {
+            // fallback if API returns different shape
+            resultContent.innerHTML = `<div>⚠️ Unexpected server response. Please try again later.</div><pre>${JSON.stringify(result, null, 2)}</pre>`;
+            resultContainer.style.display = 'block';
+        }
+    }
+
+    // main prediction handler
+    async function handlePrediction() {
+        // clear previous errors & hide result until new computation
+        apiErrorDiv.style.display = 'none';
+        resultContainer.style.display = 'none';
+        
+        const patient = getPatientData();
+        const validationError = validateData(patient);
+        if (validationError) {
+            apiErrorDiv.innerText = `⚠️ Validation: ${validationError}`;
+            apiErrorDiv.style.display = 'block';
+            return;
+        }
+        
+        // Show loading temporary info inside result area
+        resultContainer.style.display = 'block';
+        resultContent.innerHTML = `<div><span class="loader"></span> Consulting Random Forest model ...</div>`;
+        resultContainer.style.background = '#f9faf5';
+        
+        try {
+            const predictionResult = await predictDiabetes(patient);
+            displayPredictionResult(predictionResult);
+        } catch (err) {
+            console.error(err);
+            resultContainer.style.display = 'none';
+            apiErrorDiv.innerText = `❌ Prediction failed: ${err.message || 'Network or server error. Please check API availability.'}`;
+            apiErrorDiv.style.display = 'block';
+        }
+    }
+
+    predictBtn.addEventListener('click', handlePrediction);
+    
+    // optional initial home info shown
+    showHomeInfo();
+    
+    // demo logout just alert
+    document.getElementById('logoutBtn')?.addEventListener('click', () => {
+        alert("You have been logged out (demo). In a real app, session would terminate.");
+        // optionally redirect or clear session but just for UI demo consistency
+    });
+
+    // also prevent accidental negative numbers? but validation catches it
+    const numberInputs = document.querySelectorAll('input[type="number"]');
+    numberInputs.forEach(inp => {
+        inp.addEventListener('change', () => {
+            let val = parseFloat(inp.value);
+            if (isNaN(val)) inp.value = 0;
+            if (inp.id === 'age' && val > 120) inp.value = 120;
+            if (inp.id === 'bmi' && val > 70) inp.value = 70;
+            if (inp.id === 'glucose' && val > 400) inp.value = 400;
+        });
+    });
+    
+    // additional: scroll to test with anchor: risk section highlight
+    if (window.location.hash === '#risk-test') {
+        setTimeout(() => riskTestSection.scrollIntoView({ behavior: 'smooth' }), 100);
+    }
+</script>
+    </body>
+</html>
